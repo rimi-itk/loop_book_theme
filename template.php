@@ -14,9 +14,11 @@ function loop_book_theme_preprocess_node(&$variables) {
 
   $node = $variables['node'];
 
-  if (isset($node->type) && $node->type === 'loop_book') {
-    $book = new Book();
+  $field = field_info_instance('node', 'field_loop_book_children', $node->type);
+  if ($field) {
+    $variables['page_id'] = $node->nid;
 
+    $book = Book::getInstance();
     $book_id = 0;
     $tree = $book->getTree($node->nid);
     if ($tree) {
@@ -40,18 +42,18 @@ function loop_book_theme_preprocess_node(&$variables) {
       $tree = $book->getTree($book_id);
       if ($tree) {
         loop_book_theme_enrich_node($tree);
-        $variables['loop_book_navigation'] = $tree;
+        $variables['loop_book_tree'] = $tree;
       }
     }
     else {
       $roots = $book->getRoots($node->nid);
-      $nodes = node_load_multiple($roots);
-      foreach ($nodes as $node) {
-        $url = url('node/' . $node->nid, array('query' => array('book' => $node->nid)));
+      $roots = node_load_multiple($roots);
+      foreach ($roots as $root) {
         $books[] = array(
-          'nid' => $node->nid,
-          'title' => $node->title,
-          'url' => $url,
+          'nid' => $root->nid,
+          'title' => $root->title,
+          'url' => url('node/' . $root->nid, array('query' => array('book' => $root->nid))),
+          'page_url' => url('node/' . $node->nid, array('query' => array('book' => $root->nid))),
         );
       }
       if (!empty($books)) {
@@ -88,45 +90,6 @@ function loop_book_theme_enrich_node(array &$node, $root = NULL) {
     'nid' => $drupal_node->nid,
     'title' => $drupal_node->title,
     'url' => $url,
-    'canonical_url' => url('node/' . $drupal_node->nid),
+    'canonical_url' => url('node/' . $drupal_node->nid, array('alias' => TRUE)),
   ];
 }
-
-// function loop_book_theme_build_tree($node, $lang, $root = NULL) {
-//   if (empty($root)) {
-//     $root = $node;
-//   }
-
-//   $children = array();
-//   if (!empty($node->field_loop_book_children)) {
-//     foreach ($node->field_loop_book_children[$lang] as $info) {
-//       $child = node_load($info['target_id']);
-//       if ($child) {
-//         $children[] = loop_book_theme_build_tree($child, $lang, $root);
-//       }
-//     }
-//   }
-
-//   $url = $root->nid != $node->nid
-//        ? url('node/' . $node->nid, array('query' => array('book' => $root->nid)))
-//        : url('node/' . $node->nid);
-
-//   return array(
-//     'nid' => $node->nid,
-//     'title' => $node->title,
-//     'url' => $url,
-//     'canonical_url' => url('node/' . $node->nid),
-//     'children' => $children,
-//   );
-// }
-
-// function loop_book_theme_get_parent_ids($node) {
-//   return db_select('field_data_field_loop_book_children')
-//     ->condition('field_loop_book_children_target_id', $node->nid, '=')
-//     ->fields(NULL, array('entity_id'))
-//     ->execute()->fetchCol();
-// }
-
-// function loop_book_theme_has_parents($node) {
-//   return count(loop_book_theme_get_parent_ids($node)) > 0;
-// }

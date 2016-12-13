@@ -1,6 +1,6 @@
 name = Loop Book
 description = Loop Book theme
 core = 7.x
-base theme = bartik
+base theme = loop
 
 stylesheets[all][] = assets/css/styles.css
