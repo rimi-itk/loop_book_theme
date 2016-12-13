@@ -1,0 +1,10 @@
+.loop-book--book-navigation {
+  width: 25%;
+  float: right; }
+  .loop-book--book-navigation ol ol {
+    margin: 0 0 0 1em;
+    padding: 0; }
+  .loop-book--book-navigation li {
+    list-style: none; }
+
+/*# sourceMappingURL=styles.css.map */

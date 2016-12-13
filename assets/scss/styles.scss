@@ -1,0 +1,18 @@
+.loop-book {
+	&--book-navigation {
+		width: 25%;
+		float: right;
+
+		ol ol {
+			margin: 0 0 0 1em;
+			padding: 0;
+		}
+
+		li {
+			list-style: none;
+		}
+	}
+
+	&--book-content {
+	}
+}
